@@ -27,7 +27,7 @@ class NoticeController extends Controller
      */
    //public $path="/laravelvue/";
     public $path="";
-    
+
     public function index()
     {
         $path=$this->path;
@@ -67,12 +67,12 @@ class NoticeController extends Controller
         foreach ($noticesUserWall as $item){
             $arrLikesUserWall[]=$item->id;
         }
-
+    if(isset($arrLikesUserWall) && !empty($arrLikesUserWall)){
         $noticesLikesWall=Notice::where('module_id','5')->whereIn('module_item_id',$arrLikesUserWall)->orderBy('id','desc')->get();
         foreach ($noticesLikesWall as $item){
             $arrModuleItemId[]=$item->module_item_id;
         }
-
+    }
 
         if(!empty($arrModuleItemId)){
             $likesWall=Like::whereIn('item_id',$arrModuleItemId)->where('read_already',0)->orderBy('id','desc')->get();
@@ -113,13 +113,14 @@ class NoticeController extends Controller
         }
 
         if(!empty($arrRequests)){
+
             $friend_requests=Friendship::where('user_requested',Auth::id())->whereIn('requester',$arrRequests)->where('status',0)->orderBy('id','desc')->get();
+            //return $friend_requests;
         }
         else
         {
             $friend_requests='false';
         }
-
 
         //-- Notifications about new posts on your wall
         $noticesWallPosts=Notice::where('module_id','8')->where('user_id',Auth::id())->orderBy('id','desc')->get();
@@ -165,7 +166,7 @@ class NoticeController extends Controller
         }
 
         if(!empty($arrWallComments)){
-            $wall_comments=WallComment::where('user_id',Auth::id())->whereIn('wall_user_id',$arrWallComments)->where('read_already',0)->orderBy('id','desc')->get();
+            $wall_comments=WallComment::whereIn('user_id',$arrWallComments)->where('wall_user_id',Auth::id())->where('read_already',0)->orderBy('id','desc')->get();
             foreach ($wall_comments as $item){
                 $post=UserWall::findOrFail($item->post_id);
                 $item['post_name'] = $post->text;
@@ -175,7 +176,6 @@ class NoticeController extends Controller
         {
             $wall_comments='false';
         }
-
 
         //-- Notifications about new comments on your community
         $noticesCommunityComments=Notice::where('module_id','11')->where('user_id',Auth::id())->orderBy('id','desc')->get();
@@ -197,18 +197,19 @@ class NoticeController extends Controller
         {
             $community_comments='false';
         }
-        
-        
+
+
               //-- Notifications about new likes in your community
     $noticesCommunityPost=Community::where('user_id',Auth::id())->get();
         foreach ($noticesCommunityPost as $item){
             $arrLikesPostCommunity[]=$item->id;
         }
-
+if(isset($arrLikesPostCommunity) && !empty($arrLikesPostCommunity)){
         $noticesLikesCommunity=Notice::where('module_id','2')->whereIn('module_item_id',$arrLikesPostCommunity)->orderBy('id','desc')->get();
         foreach ($noticesLikesCommunity as $item){
             $arrModuleItemId[]=$item->module_item_id;
         }
+}
 
   if(!empty($arrModuleItemId)){
   $noticesListPostsInCommunity=CommunityPost::whereIn('community_id',$arrModuleItemId)->orderBy('id','desc')->get();
@@ -256,7 +257,7 @@ class NoticeController extends Controller
         {
             $blog_likes='false';
         }
-     
+
 if($invitations=='false' && $likesWall=='false' && $messages=='false' && $gifts=='false' && $friend_requests=='false' && $wall_posts=='false' && $community_posts=='false' && $wall_comments=='false' && $community_comments=='false' && $community_likes=='false' && $blog_likes=='false' ){
     $emptyLikes=false;
 }

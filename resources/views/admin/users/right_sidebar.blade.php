@@ -1,5 +1,5 @@
-<div class="col-xs-12 w3-center ">
-    <div class="col-xs-10 col-xs-offset-1 w3-center">
+<div class="col-xs-12 w3-center">
+    <div class="col-xs-12 w3-center">
     <hr>
     </div>
     <h4>Communities</h4>
@@ -9,9 +9,9 @@
       <li class="w3-large">
           <a href="{{ URL::to('community/' . $community->id ) }}">
           {{$community->name}}
-          </a>
+          </a><br>
                     @if($community->user_id==Auth::id())
-                        <a href="{{ URL::to('community/' . $community->id . '/edit') }}" class="w3-right ">Edit</a>
+                        <a href="{{ URL::to('community/' . $community->id . '/edit') }}" class="w3-text-green ">Edit</a>
                     @endif
       </li>
         @endforeach
@@ -21,9 +21,9 @@
     @endif
         </ul>
         @if($user->id==Auth::id())
-    <a href="{{ URL::to('users/' . $user->id.'/edit' ) }}" style="font-size:15px">
+    <a href="{{ URL::to('community/create' ) }}" style="font-size:15px">
         <i  data-container="body" data-placement="bottom" data-toggle="tooltip" title="Edit profile" class="fa fa-plus-circle" ></i>
-        Add new travel community
+        Create new community
     </a>
     @endif
 </div>
@@ -48,14 +48,15 @@
 @endif
 <div class="col-xs-10 col-xs-offset-1 w3-center">
     <hr>
-    <h4><a href="{{ URL::to('friends/' . Auth::id() ) }}">List of friends</a></h4>
+    <h4><a href="{{ URL::to('friends/' . $user->id ) }}">List of {{$user->name}}'s friends</a></h4>
     @if(count($user->friends())>0)
     <p>
 
         @foreach($user->friends() as $friend)
 
-            <a href="{{ URL::to('users/' . $friend->id ) }}" style="font-size:15px">
-        <img style="border-radius: 50px;" height="50" width="50" src="{{$friend->photo ? $path.$friend->photo->path :$path."/images/noimage.png"}}" alt="">
+            <a  href="{{ URL::to('users/' . $friend->id ) }}" style="font-size:15px">
+        <img data-container="body" data-placement="bottom" data-toggle="tooltip" title="{{$friend->name}} {{(isset($friend->profile) && !empty($friend->profile->lastname))?$friend->profile->lastname:''}}" 
+        style="border-radius: 50px;" height="50" width="50" src="{{$friend->photo ? $path.$friend->photo->path :$path."/images/noimage.png"}}" alt="">
             </a>
         @endforeach
 

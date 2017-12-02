@@ -42,6 +42,7 @@
          @if(Auth::user()->role_id=="1")
          <p>   <a href="{{URL::to('users/create ')}}">Create User</a></p>
           @endif
+          <p>  <a href="{{URL::to('friends/'.Auth::user()->id)}}" >My friends</a></p>
      </div>
      <div id="categories" class="hide" style="width:3000px;">
          <p>  <a href="{{URL::to('categories ')}}">All Categories</a></p>

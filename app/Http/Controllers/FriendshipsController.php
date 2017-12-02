@@ -159,7 +159,7 @@ class FriendshipsController extends Controller
              'user_name'=>$user->name
 
         );
-        Notice::where('module_item_id',$friendship->id)->where('module_id','6')->delete();
+
         $friendship->delete();
         return Response::json( $response );
     }
@@ -167,11 +167,12 @@ class FriendshipsController extends Controller
     public function acceptFriend(Request $request){
         $user_id=$request['user_id'];
         $user=User::findOrFail($user_id);
-        $friendship=Friendship::where('requester',$user_id)->orWhere('user_requested',$user_id)
-            ->where('requester',Auth::id())->orWhere('user_requested',Auth::id())->first();
+        $friendship=Friendship::where('requester',$user_id)
+            ->where('user_requested',Auth::id())->first();
         $friendship->status=1;
+          $friendship->update();
         Notice::where('module_item_id',$friendship->id)->delete();
-        $friendship->update();
+      
 
         $response = array(
             'status' => 'true',

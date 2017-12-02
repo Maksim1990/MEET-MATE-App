@@ -72,7 +72,7 @@
                 <div class="col-xs-12 col-sm-12 ">
                <span>
                    <a href="{{ URL::to('users/' . $like->user->id ) }}" style="font-size:15px">
-                   {{Auth::id()==$like->user->id?'You ':$like->user->name}}</a> liked {{$like->post_name}} post on your wall</span>
+                   {{Auth::id()==$like->user->id?'You ':$like->user->name}}</a> liked {!! $like->post_name !!} post on your wall</span>
                     <br><span class="w3-text-green">({{$like->created_at->diffForHumans()}})</span>
                 </div>
                 @if(Auth::id()!=$like->user->id)
@@ -126,7 +126,7 @@
                 </div>
             @endif
 
-            @if($friend_requests!='false')
+            @if($friend_requests!=='false' && !empty($friend_requests))
                 <div class="col-xs-4 col-sm-4 ">
                     <h2>New friend requests</h2>
                     @foreach($friend_requests as $request)
@@ -146,8 +146,8 @@
                                 </div>
                             @endif
                             <div class="col-xs-9 col-sm-9 " style="margin-top:15px;" id="friend_request_buttons_{{$request->user->id}}">
-                                <a id="decline_friend_{{$request->user->id}}" onclick="declineUser('{{$request->user->id}}','{{$request->user->name}}')"   class="decline_friend w3-button w3-orange" style="display: inline-block;width:200px;margin-top: 50px;">DECLINE REQUEST</a>
-                                <a id="accept_friend_{{$request->user->id}}" onclick="acceptUser('{{$request->user->id}}','{{$request->user->name}}')"   class="remove_friend w3-button w3-yellow" style="display: inline-block;width:200px;">ACCEPT REQUEST</a>
+                                <a id="decline_friend_{{$request->user->id}}" onclick="declineUser('{{$request->user->id}}','{{$request->user->name}}')"   class="decline_friend w3-button w3-orange" style="display:block;width:100%;margin-top: 50px;">DECLINE REQUEST</a>
+                                <a id="accept_friend_{{$request->user->id}}" onclick="acceptUser('{{$request->user->id}}','{{$request->user->name}}')"   class="remove_friend w3-button w3-yellow" style="display: block;width:100%;">ACCEPT REQUEST</a>
                                 <hr>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
                    <a href="{{ URL::to('users/' . $request->user->id ) }}" style="font-size:15px">
                    {{Auth::id()==$request->user->id?'You ':$request->user->name}}</a> added new comment to
                         <a href="{{ URL::to('wall/' . $request->wall_user_id ) }}" style="font-size:15px">
-                        {{$request->post_name}}</a> post on your wall</span>
+                        {!! $request->post_name !!}</a> post on your wall</span>
                                 <br><span class="w3-text-green">({{$request->created_at->diffForHumans()}})</span>
                             </div>
                             @if(Auth::id()!=$request->user->id)
@@ -247,8 +247,7 @@
                 </div>
             @endif
 
-
-            @if($community_comments!='false')
+            @if(!empty($community_comments) && $community_comments!='false')
                 <div class="col-xs-4 col-sm-4 ">
                     <h2>New comments in your community</h2>
                     @foreach($community_comments as $request)
@@ -258,7 +257,7 @@
                    <a href="{{ URL::to('users/' . $request->user->id ) }}" style="font-size:15px">
                    {{Auth::id()==$request->user->id?'You ':$request->user->name}}</a> added new comment to
                         <a href="{{ URL::to('community/' . $request->community_id ) }}" style="font-size:15px">
-                        {{$request->post_name}}</a> post in your community
+                        {!! $request->post_name !!}</a> post in your community
                         <a href="{{ URL::to('community/' . $request->community_id ) }}" style="font-size:15px">
                         {{$request->community_name}}</a>
                     </span>
@@ -291,7 +290,7 @@
                 <div class="col-xs-12 col-sm-12 ">
                <span>
                    <a href="{{ URL::to('users/' . $like->user->id ) }}" style="font-size:15px">
-                   {{Auth::id()==$like->user->id?'You ':$like->user->name}}</a> liked {{$like->post_name}} post in 
+                   {{Auth::id()==$like->user->id?'You ':$like->user->name}}</a> liked {!! $like->post_name !!} post in 
                    <a href="{{ URL::to('community/' . $like->community_id ) }}" style="font-size:15px">
                    {{$like->community_name}} community
                    </a></span>
@@ -329,7 +328,7 @@
                    <a href="{{ URL::to('users/' . $like->user->id ) }}" style="font-size:15px">
                    {{Auth::id()==$like->user->id?'You ':$like->user->name}}</a> liked
                    <a href="{{ URL::to('posts/' . $like->post_id ) }}" style="font-size:15px">
-                   {{$like->post_name}}</a> post
+                   {!! $like->post_name !!}</a> post
                    </span>
                                 <br><span class="w3-text-green">({{$like->created_at->diffForHumans()}})</span>
                             </div>
@@ -390,6 +389,7 @@
 
     $(".accept_invitation").click(function(e) {
         var invitation_id=$(this).data('invitation-id');
+        
         var invitation_name=$(this).data('invitation-name');
         var url_accept_invitation_notice='{{ URL::to('accept_invitation_notice') }}';
             $.ajax({

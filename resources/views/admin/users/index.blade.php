@@ -1,44 +1,115 @@
 @extends('layouts.admin')
+@section('styles')
+<style>
+    .alert {
+    padding: 20px;
+    background-color: #f44336; /* Red */
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+    color: black;
+}
+</style>
+@endsection
 @section('General')
 
 <div class="table-responsive">
 
   <div class="w3-row">
-    <div class="w3-col m6 l6 ">
+    <div class="w3-col m3 l3 ">
       <h1>Users</h1>
     </div>
-    <div class="w3-col m6 l6">
+    <div class="w3-col m6 l6 w3-ri" id="search_bar">
+        <div class="w3-right">
       <form action="/search" method="POST" role="search">
         {{ csrf_field() }}
         <div class="input-group">
           <input type="text" class="form-control" name="q"
                  placeholder="Search users"> <span class="input-group-btn">
-            <button type="submit" class="btn btn-default">
+            <button type="submit" name="search" class="btn btn-default">
                 <span class="glyphicon glyphicon-search"></span>
             </button>
         </span>
         </div>
       </form>
     </div>
+    </div>
+     <div class="w3-col m3 l3" id="search_bar">
+      <div class="w3-right">
+      {!! Form::open(['method'=>'GET','action'=>'AdminUserController@filter'])!!}
+        <div class="input-form" data-container="body" data-placement="top" data-toggle="tooltip" title="Change filter order">
+            {!! Form::select('filter_option', [
+            ""=>"",
+            'online'=>'Recently online',
+            'register'=>'Recently registered'
+            ], ['class'=>'form-control','id'=>'chooseType']) !!}
+
+        {!! Form::submit('Filter',['class'=>'btn btn-sm btn-warning']) !!}
+         </div>
+        {!! Form::close() !!}
+
+
+      </div>
+    </div>
   </div>
     <div class="col-xs-12 col-sm-12 tab_main_body">
+    @if($errors->any())
+        <div class="alert">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  {{$errors->first()}}
+</div>
+        @endif
       @if($users)
         @foreach($users as $user)
       <div class="w3-row post_item">
-        <div class="w3-col m2 l2 w3-center">
+        <div class="col-xs-2 col-sm-2 w3-center">
             <a href="{{ URL::to('users/' . $user->id ) }}">
-          <img style="border-radius: 20px;object-fit: cover;" width="150" height="150" src="{{$user->photo ? $path.$user->photo->path :$path."/images/noimage.png"}}" alt="">
+          <img data-container="body" data-placement="right" data-toggle="tooltip" title="{{$user->name}} {{(isset($user->profile) && !empty($user->profile->lastname))?$user->profile->lastname:''}}"
+          style="border-radius: 20px;object-fit: cover;" width="150" height="150" src="{{$user->photo ? $path.$user->photo->path :$path."/images/noimage.png"}}" alt="">
             </a>
         </div>
-        <div class="w3-col m6 l6">
+        <div class="col-xs-5 col-xs-offset-1 col-sm-5 col-sm-offset-1">
           <p>
               <a href="{{ URL::to('users/' . $user->id ) }}">
             <h3>{{ucfirst(strtolower($user->name))}} {{ucfirst(strtolower($user->profile?$user->profile->lastname:""))}}</h3>
             </a>
           </p>
         <p style="color:cadetblue;font-weight: bold;">{{strtoupper($user->profile?$user->profile->status:"")}} </p>
+        <p >
+            <a href="{{ URL::to('chat/' . $user->id ) }}">
+            <span data-container="body" data-placement="top" data-toggle="tooltip" title="Send message" class="message_icon" style="color:gray;font-size:24px;"  ><i class="fa fa-envelope" aria-hidden="true"></i> </span></a>
+
+            <a href="{{ URL::to('wall/' . $user->id ) }}">
+            <span data-container="body" data-placement="top" data-toggle="tooltip" title="{{$user->name}}'s wall" class="wall_icon" style="color:gray;font-size:24px;margin-left:20px;"  ><i class="fa fa-files-o" aria-hidden="true"></i> </span></a>
+          </p>
+          <p>
+
+                @if($user->last_online )
+
+                        <p><hr><i class="fa fa-circle" style="color:green;" aria-hidden="true"></i> Online</p>
+                    @else
+                        <p ><hr><i class="fa fa-circle-thin" style="color:green;" aria-hidden="true"></i> <span data-container="body" data-placement="bottom" data-toggle="tooltip" title="Last time online {{$user->online}} UTC+3">
+                            Offline</span></p>
+                    @endif
+
+          </p>
         </div>
-        <div class="w3-col m4 l4" id="buttons_{{$user->id}}">
+        <div class="col-xs-4  col-sm-4" id="buttons_{{$user->id}}">
           @if($user->status_type=='1')
           <a id="add_friend_{{$user->id}}" onclick="addUser('{{$user->id}}','{{$user->name}}')"  class="add_friend w3-button w3-green" style="display: inline-block;width:200px;margin-top: 50px;">ADD TO FRIENDS</a>
           @elseif($user->status_type=='2')
@@ -85,10 +156,10 @@
                 if(data['status']) {
                        var user_id=data['user_id'];
               var user_name=data['user_name'];
-             $('#remove_friend_'+user_id).css('display','none'); 
+             $('#remove_friend_'+user_id).css('display','none');
              $('#buttons_'+user_id).html('');
-             $("#buttons_"+user_id).append("<a id='add_friend_"+user_id+"' onclick=\"addUser('"+user_id+"','"+user_name+"')\"  class='add_friend w3-button w3-green' style='display: inline-block;width:200px;margin-top: 50px;'>ADD TO FRIEND</a>"); 
-             
+             $("#buttons_"+user_id).append("<a id='add_friend_"+user_id+"' onclick=\"addUser('"+user_id+"','"+user_name+"')\"  class='add_friend w3-button w3-green' style='display: inline-block;width:200px;margin-top: 50px;'>ADD TO FRIEND</a>");
+
                   new Noty({
                     type: 'success',
                     layout: 'bottomLeft',
@@ -113,9 +184,9 @@
               if(data['status']) {
               var user_id=data['user_id'];
               var user_name=data['user_name'];
-             $('#add_friend_'+user_id).css('display','none'); 
+             $('#add_friend_'+user_id).css('display','none');
              $('#buttons_'+user_id).html('');
-             $("#buttons_"+user_id).append("<a id='decline_friend_"+user_id+"' onclick=\"declineUser('"+user_id+"','"+user_name+"')\"  class='decline_friend w3-button w3-orange' style='display: inline-block;width:200px;margin-top: 50px;'>DECLINE REQUEST</a>"); 
+             $("#buttons_"+user_id).append("<a id='decline_friend_"+user_id+"' onclick=\"declineUser('"+user_id+"','"+user_name+"')\"  class='decline_friend w3-button w3-orange' style='display: inline-block;width:200px;margin-top: 50px;'>DECLINE REQUEST</a>");
               new Noty({
                 type: 'success',
                 layout: 'bottomLeft',
@@ -140,9 +211,9 @@
             if(data['status']) {
               var user_id=data['user_id'];
               var user_name=data['user_name'];
-             $('#decline_friend_'+user_id).css('display','none'); 
+             $('#decline_friend_'+user_id).css('display','none');
              $('#buttons_'+user_id).html('');
-             $("#buttons_"+user_id).append("<a id='add_friend_"+user_id+"' onclick=\"addUser('"+user_id+"','"+user_name+"')\"  class='add_friend w3-button w3-green' style='display: inline-block;width:200px;margin-top: 50px;'>ADD TO FRIEND</a>"); 
+             $("#buttons_"+user_id).append("<a id='add_friend_"+user_id+"' onclick=\"addUser('"+user_id+"','"+user_name+"')\"  class='add_friend w3-button w3-green' style='display: inline-block;width:200px;margin-top: 50px;'>ADD TO FRIEND</a>");
               new Noty({
                 type: 'error',
                 layout: 'bottomLeft',
@@ -167,11 +238,11 @@
             if(data['status']) {
                    var user_id=data['user_id'];
               var user_name=data['user_name'];
-             $('#decline_friend_'+user_id).css('display','none'); 
-             $('#accept_friend_'+user_id).css('display','none'); 
+             $('#decline_friend_'+user_id).css('display','none');
+             $('#accept_friend_'+user_id).css('display','none');
              $('#buttons_'+user_id).html('');
-             $("#buttons_"+user_id).append("<a id='remove_friend_"+user_id+"' onclick=\"removeUser('"+user_id+"','"+user_name+"')\"  class='remove_friend w3-button w3-red' style='display: inline-block;width:200px;margin-top: 50px;'>REMOVE FROM FRIENDS</a>"); 
-             
+             $("#buttons_"+user_id).append("<a id='remove_friend_"+user_id+"' onclick=\"removeUser('"+user_id+"','"+user_name+"')\"  class='remove_friend w3-button w3-red' style='display: inline-block;width:200px;margin-top: 50px;'>REMOVE FROM FRIENDS</a>");
+
               new Noty({
                 type: 'success',
                 layout: 'bottomLeft',
@@ -184,6 +255,3 @@
     }
   </script>
 @endsection
-
-
-

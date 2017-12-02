@@ -11,14 +11,14 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-  // public $path="/laravelvue/";
+   //public $path="/laravelvue/";
     public $path="";
     public function index()
     {
         $path=$this->path;
         $arrTabs=['General'];
         $active="active";
-        
+
         return view('currency.index', compact('arrTabs', 'active','path'));
     }
     /**
@@ -91,6 +91,7 @@ class CurrencyController extends Controller
     {
         $input_currency=$request['input_currency'];
         $input_value=$request['input_value'];
+    if(!empty($input_value)){
         $output_currency=$request['output_currency'];
         $response = \Unirest\Request::get("https://currencyconverter.p.mashape.com/?from=".$input_currency."&from_amount=".$input_value."&to=".$output_currency,
             array(
@@ -98,9 +99,13 @@ class CurrencyController extends Controller
                 "Accept" => "application/json"
             )
         );
-     return ["result"=>$response->body->to_amount];
+        $result=$response->body->to_amount;
+    }else{
+       $result='false';
     }
-    
-    
-    
+     return ["result"=>$result];
+    }
+
+
+
 }

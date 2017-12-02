@@ -130,7 +130,7 @@ class LikesController extends Controller
         if($moduleId=='1') {
             $item = Post::findOrFail($itemId);
             if($isLike && !isset($like) ) {
-                Notice::create(['user_id' => $item->user_id, 'module_item_id' => $item->id, 'module_id' => '1', 'module_name' => 'Post']);
+                Notice::create(['user_id' => $item->user_id, 'module_item_id' => $item->id,'user_sender_id' =>Auth::id(), 'module_id' => '1', 'module_name' => 'Post']);
             }else{
                 Notice::where('module_id',1)->where('module_item_id',$item->id)->delete();
             }

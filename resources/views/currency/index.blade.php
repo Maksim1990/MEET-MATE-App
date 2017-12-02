@@ -30,12 +30,12 @@
             'SGD'=>'SGD Singapore, dollar',
             'THB'=>'THB Thailand, baht',
             'ZAR'=>'ZAR South Africa, rand',
-                ],null, ['class'=>'form-control','id'=>'input_currency','data-icon'=>"glyphicon glyphicon-eye-open"]) !!}
+                ],null, ['required' => 'required','class'=>'form-control','id'=>'input_currency','data-icon'=>"glyphicon glyphicon-eye-open",'onkeypress'=>'return runScript(event);']) !!}
 
             </div>
             <div class="group-form">
                 {!! Form::label('input_value','Value:') !!}
-                {!! Form::text('input_value', null, ['class'=>'form-control','id'=>'input_value']) !!}
+                {!! Form::text('input_value', null, ['required' => 'required','class'=>'form-control','id'=>'input_value','onkeypress'=>'return runScript(event);']) !!}
             </div>
         <div class="group-form">
             {!! Form::label('output_currency','To what currency convert:') !!}
@@ -60,7 +60,7 @@
             'SGD'=>'SGD Singapore, dollar',
             'THB'=>'THB Thailand, baht',
             'ZAR'=>'ZAR South Africa, rand',
-            ],null, ['class'=>'form-control','id'=>'output_currency']) !!}
+            ],null, ['class'=>'form-control','required' => 'required','id'=>'output_currency','onkeypress'=>'return runScript(event);']) !!}
 
         </div>
 
@@ -77,7 +77,12 @@
     <script>
         $(document).ready(function () {
             $('#convert').on('click', function() {
-                var token='{{\Illuminate\Support\Facades\Session::token()}}';
+              translate();
+            });
+        });
+        
+        function translate(){
+              var token='{{\Illuminate\Support\Facades\Session::token()}}';
                 var url='{{ URL::to('convert_currency') }}';
                 var input_currency=$('#input_currency').val();
                 var input_value=$('#input_value').val();
@@ -181,12 +186,21 @@
                     success: function(data) {
                         $('#load_image').remove();
                             var response = data['result'];
+                            if (response!='false'){
                         $('#result_currency').html(iconInputCurrency+' '+input_value+' '+input_currency+'<br>=<br>'+iconOutputCurrency+' '+response+' '+output_currency);
+                            }else{
+                            $('#result_currency').html('Input value is empty! <br> Please try again');    
+                            }
                     }
 
                 });
-            });
-        });
+        }
+        
+        function runScript(e) {
+    if (e.keyCode == 13) {
+         translate();
+    }
+}
     </script>
 @endsection
 

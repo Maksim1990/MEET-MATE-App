@@ -20,7 +20,7 @@ class JobOfferController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-  //  public $path="/laravelvue/";
+  //public $path="/laravelvue/";
     public $path="";
     public function index()
     {
@@ -31,7 +31,7 @@ class JobOfferController extends Controller
         $title='Job offers';
         $category=Category::pluck('name','id')->all();
         $type=CommunityType::pluck('name','id')->all();
-        
+
         //return $jobs;
         return view('joboffer.index', compact('arrTabs', 'active', 'jobs','path','title','category','type'));
     }

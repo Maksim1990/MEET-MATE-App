@@ -24,7 +24,7 @@ class CommunityController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    //public $path="/laravelvue/";
+  //  public $path="/laravelvue/";
     public $path="";
     public function index()
     {
@@ -60,7 +60,7 @@ class CommunityController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $file=$request->file('photo_id');
         if(!($file->getClientSize()>2100000)){
             $input=$request->all();
@@ -70,7 +70,7 @@ class CommunityController extends Controller
                 $name=time().$file->getClientOriginalName();
                 $file->move('images',$name);
                 $photo=Photo::create(['path'=>$name]);
-                
+
             }
             $input['user_id']=Auth::id();
             $input['photo_id']=$photo->id;
@@ -96,7 +96,7 @@ class CommunityController extends Controller
         $path=$this->path;
         $arrTabs=['General','Statistics'];
         $active="active";
-        $user_online=Auth::user();
+
         $arrUsers=[];
         $arrUsersAll=[];
         $arrUsersPending=[];
@@ -144,11 +144,33 @@ class CommunityController extends Controller
         foreach ($community_users_pending as $user_community){
             $arrUsersPending[]=$user_community->user_id;
         }
-        $users=User::where('id','!=',Auth::id())->whereNotIn('id',$arrUsersAll)->orderBy('id')->get();
-        $users_in_community=User::where('id','!=',Auth::id())->whereIn('id',$arrUsers)->orderBy('id')->limit(10)->get();
-        $users_pending=User::where('id','!=',Auth::id())->whereIn('id',$arrUsersPending)->orderBy('id')->limit(10)->get();
+        $friends=[];
+        foreach (Auth::user()->friends() as $friend){
+            if(!in_array($friend->id,$arrUsersAll)){
+                $friends[]=$friend;
+            }
+        }
+        $users=User::where('id','!=',Auth::id())->where('id','!=',$community->user_id)->whereNotIn('id',$arrUsersAll)->orderBy('id')->get();
+        $users_in_community=User::where('id','!=',$community->user_id)->whereIn('id',$arrUsers)->orderBy('id')->limit(10)->get();
+        $users_pending=User::where('id','!=',Auth::id())->where('id','!=',$community->user_id)->whereIn('id',$arrUsersPending)->orderBy('id')->limit(10)->get();
+        if(count($users_pending)>0){
+            foreach ($users_pending as $pending){
+                foreach ($community_users_with_pending as $comm_user) {
+                    if($comm_user->user_id == $pending->id ) {
+                        $pending['user_inviter'] = $comm_user->user_inviter_id;
+                    }
+                }
+            }
+        }
 
-
+        if(!empty($users_in_community)){
+                foreach ($users_in_community as $user){
+                    $arrUsersInCommunityIds[]=$user->id;
+                }
+        }
+        if(!isset($arrUsersInCommunityIds)){
+            $arrUsersInCommunityIds=array();
+        }
 
         Notice::where('module_id','9')->where('module_item_id',$id)->delete();
         $wallPosts=CommunityPost::where('community_id',$id)->get();
@@ -165,7 +187,7 @@ class CommunityController extends Controller
             $comment->read_already=1;
             $comment->save();
         }
-    
+
         $postsInCommunity=CommunityPost::where('community_id',$id)->get();
           foreach ($postsInCommunity as $item){
             $arrListPostsInCommunity[]=$item->id;
@@ -178,7 +200,7 @@ class CommunityController extends Controller
                     $like->save();
                 }
         }
-       
+
         //   $myDirectory = opendir($path."images/emoji/flag");
         $myDirectory = opendir(public_path()."/images/emoji/flag");
         while($entryName = readdir($myDirectory)) {
@@ -287,11 +309,11 @@ class CommunityController extends Controller
             }
         }
         closedir($myDirectory);
-       
-       
-       
-       
-        return view('community.community', compact('arrTabs', 'active', 'user_online','users','community','path','posts','users_in_community','users_pending','emojiFlags','emojiSport','emojiAnimals','emojiClassic','emojiClothes','emojiEmojis','emojiFood','emojiHolidays','emojiOther','emojiRest','emojiTravel','emojiWeather'));
+
+
+
+
+        return view('community.community', compact('arrTabs', 'active','arrUsersInCommunityIds', 'friends','users','community','path','posts','users_in_community','users_pending','emojiFlags','emojiSport','emojiAnimals','emojiClassic','emojiClothes','emojiEmojis','emojiFood','emojiHolidays','emojiOther','emojiRest','emojiTravel','emojiWeather'));
   }
 
     /**
@@ -305,7 +327,7 @@ class CommunityController extends Controller
         $community=Community::findOrFail($id);
         $category=Category::pluck('name','id')->all();
         $type=CommunityType::pluck('name','id')->all();
-        
+
         $arrTabs=['General'];
         $active="active";
         return view('community.edit',compact('arrTabs', 'active','type','category','community'));
@@ -322,7 +344,7 @@ class CommunityController extends Controller
     {
         $community=Community::findOrFail($id);
         $file=$request->file('photo_id');
-        if(!($file->getClientSize()>2100000)){
+        if(!isset($file) || ( isset($file) && !($file->getClientSize()>2100000))){
         $input=$request->all();
         if($file=$request->file('photo_id'))
         {
@@ -353,7 +375,28 @@ class CommunityController extends Controller
      */
     public function destroy($id)
     {
-        Community::findOrFail($id)->delete();
+        $community=Community::findOrFail($id);
+        if($community->photo) {
+            unlink(public_path() . $community->photo->path);
+        }
+        $photo_user=Photo::findOrFail($community->photo_id);
+        if($photo_user) {
+            $photo_user->delete();
+        }
+        UserCommunity::where('community_id',$community->id)->delete();
+        $posts=CommunityPost::where('community_id',$community->id)->delete();
+        foreach ($posts as $communityPost){
+            if($communityPost->image) {
+                unlink(public_path() . $communityPost->image->photo->path);
+            }
+            $photo_post=Photo::findOrFail($communityPost->image->photo->id);
+            if($photo_post) {
+                $photo_post->delete();
+            }
+        }
+
+        Comment::where('community_id',$community->id)->delete();
+        $community->delete();
 
         return redirect('community');
     }
@@ -364,6 +407,20 @@ class CommunityController extends Controller
         $user_id=$request['user_id'];
         $userCommunity=UserCommunity::create(['user_id'=>$user_id,'user_inviter_id'=>Auth::id(),'community_id'=>$community_id,'accepted'=>0]);
         Notice::create(['user_id'=>$user_id,'user_sender_id'=>Auth::id(),'module_item_id'=>$userCommunity->id,'module_id'=>'3','module_name'=>'CommunityUser']);
+        return ["status"=>true];
+    }
+
+    public function declineUser(Request $request)
+    {
+        $community_id=$request['community_id'];
+        $user_id=$request['user_id'];
+        $userCommunity=UserCommunity::where('user_inviter_id',Auth::id())->where('user_id',$user_id)
+            ->where('community_id',$community_id)->first();
+        $notice=Notice::where('module_id','3')->where('module_item_id',$userCommunity->id);
+        if($notice){
+            $notice->delete();
+        }
+       $userCommunity->delete();
         return ["status"=>true];
     }
 
@@ -401,5 +458,5 @@ class CommunityController extends Controller
     }
 
 
-    
+
 }

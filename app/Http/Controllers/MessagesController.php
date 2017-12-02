@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class MessagesController extends Controller
 {
-//    public $path="/laravelvue/";
+ //public $path="/laravelvue/";
     public $path="";
     /**
      * Display a listing of the resource.
@@ -117,7 +117,7 @@ class MessagesController extends Controller
     {
         //
     }
-    
+
     public function markAsRead(Request $request)
     {
         $message_id=$request['message_id'];
@@ -127,6 +127,6 @@ class MessagesController extends Controller
         Notice::where('module_id','4')->where('module_item_id',$message_id)->delete();
         return ["status"=>true];
     }
-    
-    
+
+
 }

@@ -8,38 +8,38 @@
         <table class="table">
             <thead>
             <tr>
-                @if(Auth::user()->role_id=='1')
                 <th>Id</th>
-                @endif
                 <th>Photo</th>
-                <th>Name</th>
                 <th>Created At</th>
                 <th>Updated At</th>
             </tr>
             </thead>
             <tbody>
+           
             @if($photos)
                 @foreach($photos as $photo)
                     <tr>
-                        @if(Auth::user()->role_id=='1')
                         <td>{{$photo->id}}</td>
-                        @endif
                         <td><img style="border-radius: 20px;" height="40" src="{{$photo ? $path.$photo->path :$path."/images/noimage.png"}}" alt=""></td>
-                       <td>{{$photo->path}}</td>
-                            <td>{{$photo->created_at? $photo->created_at->diffForHumans(): "No date"}}</td>
+                        <td>{{$photo->created_at? $photo->created_at->diffForHumans(): "No date"}}</td>
                         <td>{{$photo->updated_at ? $photo->updated_at->diffForHumans():"No date"}}</td>
                         <td>
+                             @if( Auth::user()->role_id=='1')
                             {{ Form::open(['method' =>'DELETE' , 'action' => ['AdminPhotoController@destroy',$photo->id]])}}
 
                             {!! Form::submit('Delete',['class'=>'btn-danger']) !!}
 
                             {!! Form::close() !!}
+                            @endif
                         </td>
                     </tr>
                 @endforeach
             @endif
             </tbody>
         </table>
+        <div class="w3-center">
+{!! $photos->links() !!}
+  </div>
     </div>
 @endsection
 

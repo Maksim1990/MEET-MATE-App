@@ -12,7 +12,7 @@
         <h2 class="w3-center">{{$job->title}}</h2>
         <div class="col-xs-12 col-sm-12 " style="background-color: white;border-radius: 50px;">
 
-        <div class="w3-raw w3-padding-16">
+        <div class="w3-raw w3-padding-16" style="min-height:150px;margin-bottom:30px;">
         <div class="col-xs-10 col-sm-4 w3-large">
             Description:
         </div>
@@ -92,6 +92,16 @@
                 {{$job->category_id!=0?$job->category->name:"No category chosen"}}
             </div>
         </div>
+         <div class="w3-raw w3-margin-bottom w3-padding-16">
+            <div class="col-xs-10 col-sm-4 w3-large">
+                Contact person:
+            </div>
+            <div class="col-xs-10 col-sm-8">
+                <a style="color:green;;" href="{{ URL::to('users/'.$job->user_id) }}">
+                {{$job->user->name}}</a>
+            </div>
+        </div>
+        
         </div>
         <div class="w3-row w3-center" style="width: 100%;border-top:1px dashed gray;margin-top: 500px">
             <h3 ><a style="color:gray;;" href="{{ URL::to('advertisement/') }}">OTHER RECENT JOB OFFERS</a></h3>
@@ -100,10 +110,10 @@
         @if(count($jobs)>0)
             <div class="w3-row w3-center" style="padding-left:15%;">
                 <ul class="bxslider" >
-                    @foreach($jobs as $job)
+                    @foreach($jobs as $job_item)
                         <li>
-                            <a href="{{ URL::to('jobs/' . $job->id ) }}">
-                                <img data-container="body" data-placement="bottom" data-toggle="tooltip" title="{{$job->title}}" src="{{$job->image ? $path.$job->image->photo->path :$path."/images/noimage.png"}}" />
+                            <a href="{{ URL::to('jobs/' . $job_item->id ) }}">
+                                <img data-container="body" data-placement="bottom" data-toggle="tooltip" title="{{$job_item->title}}" src="{{$job_item->image ? $path.$job_item->image->photo->path :$path."/images/noimage.png"}}" />
                             </a>
                         </li>
                     @endforeach

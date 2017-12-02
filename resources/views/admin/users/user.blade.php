@@ -1,16 +1,36 @@
 @extends('layouts.admin')
+@section ('styles')
+
+   <style>
+       a{color:#6F95EC;}
+   </style>
+@endsection
 @section ('General')
 
     <div class="w3-row ">
         <div class="w3-col s9 m9 l9 main_window border_right">
-        <div class="w3-col s4 m4 l4">
-           <div class="w3-center"><a data-toggle="modal" data-target="#myModal"><img style="border-radius: 20px;" height="200" src="{{$user->photo ? $path.$user->photo->path :$path."/images/noimage.png"}}" alt=""></a></div>
+        <div class="w3-col s4 m4 l4" style="padding-right:15px;">
+           <div class="w3-center">
+               @if($user->photo)
+               <a data-toggle="modal" data-target="#myModal"><img style="border-radius: 20px;width:100%;" src="{{$path.$user->photo->path }}" alt=""></a>
+               @else
+               <div style='border-radius: 20px;'>
+                <p  id='add_image' class='w3-hover-opacity' style="height:200px;background-repeat: no-repeat;background-size: 250px 250px;background-image:url('{{$path."/images/noimage.png"}}')">
+                   @if($user->id==Auth::id() || Auth::user()->role_id=='1')
+                   <a href="{{ URL::to('users/' . $user->id.'/edit' ) }}" style='height:100%;text-decoration:none;'>
+                        <i id='add_image_icon' style='position:relative;top:100px;display:none;font-size:30px;color:gray;' class=" fa fa-plus-circle" aria-hidden="true"></i></a>
+                @endif
+                </p>
+                </div>
+               @endif
+               </div>
             <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
                             @if(isset($user->photo) )
                             <img style="border-radius: 20px;" height="500" src="{{$path.$user->photo ? $path.$user->photo->path :$path."/images/noimage.png"}}" alt="">
+                            <button class='btn btn-small btn-danger w3-display-topright' id='close_image'>Close</button>
                             @endif
                         </div>
                     </div>
@@ -93,11 +113,12 @@
         </button>
         </span>
         </p>
+        @if($user->id==Auth::id() || Auth::user()->role_id=='1')
             <p id="edit-status-buttons">
                 <span id="edit-status"></span>
                 <span id="delete-status" class="w3-text-red"></span>
-
             </p>
+            @endif
     @endif
     @if(isset($user->profile->status) && !empty($user->profile->status))
                 <p class="input-group" id="status-form-on-delete">
@@ -112,11 +133,12 @@
                    " {{$user->profile->status}} "
 
     </p>
+    @if($user->id==Auth::id() || Auth::user()->role_id=='1')
 <p id="edit-status-buttons">
     <span id="edit-status"><i class='fa fa-edit' aria-hidden='true'></i></span>
     <span id="delete-status" class='w3-text-red'><i class='fa fa-close' aria-hidden='true' ></i></span>
-
 </p>
+@endif
 
 
         @else
@@ -129,11 +151,12 @@
         </button>
         </span>
         </p>
+        @if($user->id==Auth::id() || Auth::user()->role_id=='1')
             <p id="edit-status-buttons">
                 <span id="edit-status"></span>
                 <span id="delete-status" class="w3-text-red"></span>
-
             </p>
+            @endif
         @endif
         @endif
 
@@ -317,6 +340,16 @@ $('#right-sidebar').removeClass('fixedr');
 </script>
 <script>
 $(document).ready(function(){
+        $("#add_image").hover(function(){
+          $("#add_image_icon").css('display','inline');
+        },function(){
+          $("#add_image_icon").css('display','none');
+        }
+        );
+});
+
+
+$(document).ready(function(){
 $("#showFullDetails").click(function(){
 var showDetails=document.getElementById('showFullDetails').dataset['value'];
 if(showDetails=='false'){
@@ -425,7 +458,7 @@ var user_name='{{ $user->name }}';
                            <p> <img style="height:200px;object-fit:cover;border-radius: 20px;" src='{{$gift->gift_path}}'></p>
                         <p class="gift_desc">{{$gift->gift_text}}</p><hr>
                         <p class="gift_desc"><a href="{{URL::to('users/'.$gift->user->id)}}" >{{$gift->user->name}}</a> sent this gift<br>{{$gift->created_at->diffForHumans()}}</p>
-                            @if($gift->user->id==Auth::id())
+                            @if($gift->user->id==Auth::id() || $user->id==Auth::id() || Auth::user()->role_id=='1')
                             <p class="gift_desc" ><a class="deleteGift" data-gift-id="{{$gift->id}}">Delete</a></p>
                             @endif
                         </aside>
@@ -437,6 +470,14 @@ var user_name='{{ $user->name }}';
 
 @endsection
 @section ('scripts')
+<script>
+    $(function () {
+$('#close_image').click(function() {
+   $('#myModal').modal('hide');
+    });        
+   
+});
+</script>
     <script>
         $(".deleteGift").click(function() {
             var token='{{\Illuminate\Support\Facades\Session::token()}}';

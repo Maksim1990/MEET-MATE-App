@@ -131,7 +131,7 @@
                     <div class="flex-center position-ref full-height">
                         <div class="content">
                             <div class="title m-b-md">
-                                <p><img style="margin-top: -15px;"  height="100" src="/images/includes/logo_white.png" alt=""></p>
+                                 <p><img style=""  height="150" src="/images/includes/logo_white.png" alt=""></p>
                                 @if (Route::has('login'))
                                     @if (Auth::check())
                                         <a href="{{ url('/home') }}">Home</a>
@@ -140,7 +140,6 @@
                                         <a href="{{ url('/register') }}">Register</a>
                                     @endif
                                 @endif
-
                                 <p style="font-size: 30px;">
                                     Developed by Maksim Narushevich
                                 </p>

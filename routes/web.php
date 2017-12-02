@@ -32,7 +32,7 @@ Route::get('/video', function () {
 
 
 Route::get('/admin',function(){
-    
+
     return view('admin.index');
 });
 Route::get('/norights',function(){
@@ -82,13 +82,16 @@ Route::group(['middleware'=>'admin'], function (){
     Route::get('/friends/{id}','AdminUserController@friends');
     Route::patch('/users/update/{id}','AdminUserController@updatePassword');
     Route::post ( '/search', function () {
-        $arrTabs=['General','Profile','Messages','Settings'];
+
+        $arrTabs=['General'];
         $active="active";
         //$path="/laravelvue/";
         $path="";
         $q = Input::get ( 'q' );
-        $users_array = User::where ( 'name', 'LIKE', '%' . $q . '%' )->orWhere ( 'email', 'LIKE', '%' . $q . '%' )->orderBy('id')->get ();
+       if(!empty($q)){
 
+                $users_array = User::where ( 'name', 'LIKE', '%' . $q . '%' )->orderBy('id')->get ();
+        $users=[];
         foreach ($users_array as $user) {
             if($user->id == 32){
                 continue;
@@ -135,6 +138,13 @@ Route::group(['middleware'=>'admin'], function (){
             return view ( 'admin.users.search', compact('arrTabs', 'active','path') )->withDetails ( $users )->withQuery ( $q );
         else
             return view ( 'admin.users.search', compact('arrTabs', 'active','path') )->withMessage ( 'No Details found. Try to search again !' );
+
+       }else
+       {
+
+            return view ( 'admin.users.search', compact('arrTabs', 'active','path') )->withErrors(['Input should not be empty']);
+       }
+
     } );
     Route::resource('/posts','AdminPostsController');
     Route::resource('/categories','AdminCategoryController');
@@ -160,6 +170,7 @@ Route::group(['middleware'=>'admin'], function (){
     Route::post('/community_comment_delete','CommentController@deleteComment');
     Route::post('/wall_comment_delete','WallCommentController@deleteComment');
     Route::post('/community_user_invite','CommunityController@inviteUser');
+    Route::post('/community_user_decline','CommunityController@declineUser');
     Route::post('/community_search','CommunityController@search');
     Route::post('/job_search','JobOfferController@search');
     Route::post('/advertisement_search','AdvertisementController@search');
@@ -199,6 +210,7 @@ Route::group(['middleware'=>'admin'], function (){
     Route::post('/hide_wall_comment_notice/','WallCommentController@hideInvitation');
     Route::post('/hide_community_comment_notice/','CommentController@hideInvitation');
     Route::post('/delete_user_image/','AdminPhotoController@deleteImage');
+    Route::get('/users_f/','AdminUserController@filter');
     Route::get('/change_password/','AdminUserController@changeUserPassword');
     Route::post('/show_left_sidebar/','SettingController@showSidebar');
     Route::get('/blog','AdminPostsController@blog');
@@ -265,8 +277,8 @@ Route::group(['middleware'=>'admin'], function (){
         $arrTabs=['General'];
         $active="active";
         $title="Instagram";
-        $path="/laravelvue/";
-         //$path="";
+        //$path="/laravelvue/";
+         $path="";
         $setting=Setting::where('user_id',Auth::id())->first();
         if(!empty($setting->instagram_accaunt)) {
             $response = Unirest\Request::get("https://madde22-instagram-v1.p.mashape.com/Instagram/GetRecentImages?Username=" . $setting->instagram_accaunt,
@@ -298,8 +310,8 @@ Route::group(['middleware'=>'admin'], function (){
         $arrTabs=['General'];
         $active="active";
         $title="Check Email";
-       $path="/laravelvue/";
-       //$path="";
+       //$path="/laravelvue/";
+       $path="";
         return view('check_email.index', compact('arrTabs', 'active','title','path'));
     });
 
@@ -388,7 +400,7 @@ Route::group(['middleware'=>'admin'], function (){
 //            echo "<img width='50' src='".$post->DisplayUrl."' ><br>====<br>";
 //        };
 //    });
-    
+
     // Route::get('/api_geolocation', function()
     //{
     //    $response = Unirest\Request::get("https://michele-zonca-google-geocoding.p.mashape.com/geocode/json?address=Minsk Pushkinskaya&sensor=true",
@@ -399,7 +411,7 @@ Route::group(['middleware'=>'admin'], function (){
     //    );
     //    return $response->body->results;
    // });
-    
+
    //  Route::get('/api_ip', function()
    // {
     //  $response = Unirest\Request::get("https://chrislim2888-ip-address-geolocation.p.mashape.com/?key=a3eea96c43a147abd76a83b5b5c78e423948454a6eaa2d59376ab0b596e43c27&format=json&ip=86.57.110.130",
@@ -410,7 +422,7 @@ Route::group(['middleware'=>'admin'], function (){
       //      );
       //  return $response->body->countryName;
    // });
-    
+
 //       Route::get('/api_ip', function()
 //    {
 //      $response = Unirest\Request::get("https://chrislim2888-ip-address-geolocation.p.mashape.com/?key=a3eea96c43a147abd76a83b5b5c78e423948454a6eaa2d59376ab0b596e43c27&format=json&ip=86.57.110.130",
@@ -421,8 +433,8 @@ Route::group(['middleware'=>'admin'], function (){
 //            );
 //        return $response->body->countryName;
 //    });
-    
-    
+
+
 //      Route::get('/api_country_code', function()
 //    {
 //         $response = Unirest\Request::get("https://restcountries-v1.p.mashape.com/alpha/?codes=MYS",
@@ -502,7 +514,7 @@ Route::group(['middleware'=>'admin'], function (){
 //             $extension = substr($entryName, -3);
 //            if ($extension == 'png') {
 //                $gifts[] = $entryName;
-//             
+//
 //            }
 //
 //       }
@@ -511,5 +523,3 @@ Route::group(['middleware'=>'admin'], function (){
 //    });
 
 });
-
-

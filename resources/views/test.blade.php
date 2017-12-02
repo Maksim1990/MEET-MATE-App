@@ -1,14 +1,16 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Page Title</title>
-
 </head>
 <body>
-@foreach($gifts as $dir)
-    <img width="200" src="{{$path}}/images/gifts/{{$dir}}" onclick="emojiDir('{{$path}}/images/gifts/{{$dir}}')" alt="" />
-@endforeach
 
+@if(isset($emojiFlags))
+<div id="emojiFlag" class="hide" style="width:3000px;">
+    @foreach($emojiFlags as $dir)
+        <img width="30" src="{{$path}}/images/emoji/flag/{{$dir}}" onclick="emojiDir('{{$path}}/images/emoji/flag/{{$dir}}')" alt="" />
+    @endforeach
+</div>
+@endif
 </body>
 </html>

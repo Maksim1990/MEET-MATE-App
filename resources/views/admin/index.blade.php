@@ -200,7 +200,7 @@
                         @foreach($messages as $message)
                             <div class="w3-col s12 m12 l12 w3-center dash_item">
                                 <p><a href="{{ URL::to('users/' . $message->user->id ) }}" style="font-size:15px;color:green;">
-                                        <img style="border-radius: 50px;object-fit: cover;" width="60" height="60" src="{{$message->user->photo ? $path.$comment->user->photo->path :$path."/images/noimage.png"}}" alt="">
+                                        <img style="border-radius: 50px;object-fit: cover;" width="60" height="60" src="{{$message->user->photo ? $path.$message->user->photo->path :$path."/images/noimage.png"}}" alt="">
                                     </a></p>
 
                                 <p> <a href="{{ URL::to('users/' . $message->user->id ) }}" style="font-size:15px;color:green;">

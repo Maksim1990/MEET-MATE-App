@@ -177,6 +177,7 @@
                 success: function(data) {
                     console.log(data['data']);
                     $('#community_block').html('');
+                     if(data['data'].length>0){
                     for(var i=0;i<data['data'].length;i++){
 
                         if(data['data'][i]['photo']!=null){
@@ -201,6 +202,10 @@
                     var result="<div class='w3-col m4 l4 w3-center'>"+image_block+"</div><div class='w3-col m8 l8'><div class='w3-col m8 l8'><p><h3><a href='{{$path}}community/"+community_id+"' style='font-size:15px'>"+community_name+"</a></h3></p><p>"+community_description+"<br>Type:"+community_type+"<br>Category:"+community_category+"</p>Created by <a href='{{$path}}users/"+community_user_id+"'>"+user_name+"</a></div><div class='w3-col m4 l4'> <p style='margin-top: 20px;'>Created "+community_created_at+"<br><a href='{{$path}}community/"+community_id+"/edit'>Edit</a></p></div></div>";
                         $("<div class='w3-row post_item'>").html(result+"</div>").appendTo('#community_block');
                     }
+                         
+                     }else{
+                $("<div class='w3-row post_item'>").html("<h4>No results found"+"</h4></div><hr/>").appendTo('#community_block');
+            }
 
                 }
             });

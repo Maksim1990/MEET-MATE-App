@@ -13,6 +13,7 @@
                 <th>Body</th>
                 <th>Created At</th>
                 <th>Updated At</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -24,9 +25,13 @@
                         <td>{{$post->category ? $post->category->name: "Uncategorized"}}</td>
                         <td><img style="border-radius: 20px;" height="40" src="{{$post->photo ? $path.$post->photo->path :$path."/images/noimage.png"}}" alt=""></td>
                         <td><a href="{{ URL::to('posts/' . $post->id . '/edit') }}">{{$post->title}}</a></td>
-                        <td>{!! $post->body !!}</td>
+                        <td>{!!$post->body!!}</td>
                         <td>{{$post->created_at->diffForHumans()}}</td>
                         <td>{{$post->updated_at->diffForHumans()}}</td>
+                        <td>
+                           <!-- Go to www.addthis.com/dashboard to customize your tools --> <div class="addthis_inline_share_toolbox"></div>
+                            
+                        </td>
                     </tr>
                 @endforeach
             @endif

@@ -44,6 +44,7 @@
                 var token='{{\Illuminate\Support\Facades\Session::token()}}';
                 var url='{{ URL::to('set_instagram') }}';
                 var instagram=$('#instagram').val();
+                
                 $('#result_instagram').html('');
                 $('<span>').html('<img id="load_image"  src="{{$path}}/images/includes/loading.gif"></span>').appendTo('#result_instagram');
                 $.ajax({

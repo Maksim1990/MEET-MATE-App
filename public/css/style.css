@@ -6,6 +6,11 @@ header{background-color:#EB4E4E;
   top: 0;
   width: 100%;
 }
+
+body img {
+    object-fit:cover;
+}
+a {color:gray;}
 .navbar-default .navbar-brand, .navbar-default .navbar-nav > li > a {color:white;}
 #Sidebar,.panel-default > .panel-heading {
     background-color: #5E5757;
@@ -35,6 +40,7 @@ footer{
         float: left;}
 .mainside{
     padding-left: 40px;
+     margin-right: 40px;
         margin: 0;
         float: left;
 height: 90%;}
@@ -382,4 +388,10 @@ background-color: lightgrey;
 .bxslider img {
     width: 200px;
     height: 150px;
+}
+#search_bar{
+    margin-top:20px;
+}
+.fa-envelope:hover,.fa-files-o:hover{
+    color:green;
 }

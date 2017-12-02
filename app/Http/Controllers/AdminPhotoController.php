@@ -20,10 +20,10 @@ class AdminPhotoController extends Controller
      */
     public function index()
     {
-        $arrTabs=['General','Statistics','Messages','Settings'];
+        $arrTabs=['General'];
         $active="active";
         $path=$this->path;
-        $photos=Photo::all();
+        $photos=Photo::where('id','>','0')->orderBy('id')->paginate(10);
         return view('admin.media.index', compact('photos','arrTabs', 'active','path'));
     }
 
@@ -34,7 +34,7 @@ class AdminPhotoController extends Controller
      */
     public function create()
     {
-        $arrTabs=['General','Statistics','Messages','Settings'];
+        $arrTabs=['General'];
         $active="active";
         return view('admin.media.upload', compact('arrTabs', 'active'));
     }
@@ -104,8 +104,8 @@ class AdminPhotoController extends Controller
         Session::flash('photo_change','The photo has been successfully deleted!');
         $photo->delete();
         return redirect('/media');
-    }  
-    
+    }
+
     public function deleteImage(Request $request)
     {
         $user_id=$request['user_id'];

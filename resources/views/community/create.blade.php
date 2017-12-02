@@ -18,7 +18,7 @@
         </div>
         <div class="group-form">
             {!! Form::label('description','Description:') !!}
-            {!! Form::textarea('description', null, ['class'=>'form-control']) !!}
+            {!! Form::textarea('description', null,['class'=>'form-control','required'=>'required']) !!}
          </div>
             <div class="group-form">
                 {!! Form::label('photo_id','Community image:') !!}

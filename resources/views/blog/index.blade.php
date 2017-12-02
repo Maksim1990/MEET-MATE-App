@@ -40,7 +40,10 @@
             <div>
             <hr>
             <h3><a href="{{ URL::to('posts/' . $post->id ) }}">{{$post->title}}</a></h3>
-            <p>{!! $post->body !!}</p>
+            <p>{!! str_limit($post->body, 400) !!}<br>
+            <a href="{{ URL::to('posts/' . $post->id ) }}" class="w3-right ">
+            <span class="w3-text-green">[read more]</span></a>
+            </p>
              </div>
             <hr>
             <div>

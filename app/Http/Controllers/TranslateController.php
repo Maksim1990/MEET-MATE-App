@@ -13,8 +13,8 @@ class TranslateController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public $path="/laravelvue/";
-   // public $path="";
+    //public $path="/laravelvue/";
+    public $path="";
     public function index()
     {
         $path=$this->path;

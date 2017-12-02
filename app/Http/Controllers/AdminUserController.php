@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Input;
 
 class AdminUserController extends Controller
 {
@@ -30,7 +31,7 @@ class AdminUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-   //public $path="/laravelvue";
+ //  public $path="/laravelvue";
  public $path="";
     public function index()
     {    $arrTabs=['General'];
@@ -84,6 +85,16 @@ class AdminUserController extends Controller
             }else{
                 $user['status_type'] =1;
             }
+            
+           $date = Carbon::parse($user->online);
+           $now = Carbon::now();
+            $diff = $date->diffInMinutes($now);
+            if($diff<=10){
+                $user['last_online']=true;
+            }else{
+                $user['last_online']=false;
+            }
+            
         }
         return view('admin.users.index', compact('users','arrTabs', 'active','path','title'));
     }
@@ -141,7 +152,7 @@ class AdminUserController extends Controller
     {
 
         $path=$this->path;
-        $arrTabs=['General','Gifts','Users'];
+        $arrTabs=['General','Gifts'];
         $active="active";
         $user=User::findOrFail($id);
         $images=UserImage::where('user_id','=',$id)->orderBy('id')->paginate(6);
@@ -199,10 +210,12 @@ class AdminUserController extends Controller
             $gift->read_already=1;
             $gift->save();
         }
-
+            $diff=0;
            $date = Carbon::parse($user->online);
            $now = Carbon::now();
             $diff = $date->diffInMinutes($now);
+            
+          // return $now.'<br>'.$date.'<br>'.$diff;
             if($diff<=10){
                 $online=true;
             }else{
@@ -245,15 +258,18 @@ class AdminUserController extends Controller
      */
     public function update(UserEditRequest $request, $id)
     {
+
         $user=User::findOrFail($id);
         $input=$request->all();
         if($file=$request->file('photo_id')) {
             if (!($file->getClientSize() > 2100000)) {
                 if ($user->photo) {
                     unlink(public_path() . $user->photo->path);
+                    $photo_user = Photo::findOrFail($user->photo_id);
+                    if($photo_user){
+                        $photo_user->delete();
+                    }
                 }
-                $photo_user = Photo::findOrFail($user->photo_id);
-                $photo_user->delete();
 
                 $name = time() . $file->getClientOriginalName();
                 $file->move('images', $name);
@@ -334,7 +350,7 @@ class AdminUserController extends Controller
     public function images($id)
     {
         $path=$this->path;
-        $arrTabs=['General','Statistic'];
+        $arrTabs=['General'];
         $active="active";
         $user=User::findOrFail($id);
         $images=UserImage::where('user_id','=',$id)->orderBy('id')->paginate(10);
@@ -347,7 +363,7 @@ class AdminUserController extends Controller
     public function friends($id)
     {
         $path=$this->path;
-        $arrTabs=['General','Statistic'];
+        $arrTabs=['General'];
         $active="active";
         $user=User::findOrFail($id);
         $friends=$user->friends();
@@ -355,7 +371,123 @@ class AdminUserController extends Controller
         if(count($friends)==0){
             $friends=false;
         }
+        
+        
+          if(!Auth::user()->friendsIds()->isEmpty()) {
+            foreach (Auth::user()->friendsIds() as $us) {
+                $friendsIds[] =$us;
+            }
+
+        }else{
+            $friendsIds=[];
+        }
+
+        if(count(Auth::user()->pendingFriendRequestIds())>0){
+            foreach (Auth::user()->pendingFriendRequestIds() as $us) {
+                $pendingFriendRequestIds[] = $us;
+            }
+        }else{
+            $pendingFriendRequestIds=[];
+        }
+
+        if(count(Auth::user()->pendingFriendRequestSentIds())>0) {
+            foreach (Auth::user()->pendingFriendRequestSentIds() as $us){
+                $pendingFriendRequestSentIds[] = $us;
+        }
+        }else{
+            $pendingFriendRequestSentIds=[];
+        }
+        if(!empty($friends)){
+        foreach ($friends as $user){
+            if(!empty($friendsIds) && in_array($user->id,$friendsIds)) {
+                $user['status_type'] = 3;
+            }elseif(!empty($pendingFriendRequestIds) && in_array($user->id,$pendingFriendRequestIds)) {
+                $user['status_type'] = 4;
+            }elseif(!empty($pendingFriendRequestSentIds) && in_array($user->id,$pendingFriendRequestSentIds)) {
+                $user['status_type'] = 2;
+            }else{
+                $user['status_type'] =1;
+            }
+        }
+        }
+        
+        
+        
+        
         $title='Friends';
         return view('admin.users.friends', compact('friends','arrTabs', 'active','user','path','title'));
     }
+    
+    public function filter(Request $request)
+    {
+        $arrTabs=['General'];
+        $active="active";
+        $filter_option=$request['filter_option'];
+        $path=$this->path;
+        $title='Users';
+        if($filter_option=='register'){
+        $users=User::where('is_active','=','1')->where('id','!=',Auth::id())->orderBy('id','desc')->paginate(10);
+        }elseif($filter_option=='register'){
+            
+        }else{
+            $users=User::where('is_active','=','1')->where('id','!=',Auth::id())->orderBy('id')->paginate(10);
+        }
+        if(!Auth::user()->friendsIds()->isEmpty()) {
+            foreach (Auth::user()->friendsIds() as $us) {
+                $friendsIds[] =$us;
+            }
+
+        }else{
+            $friendsIds=[];
+        }
+
+        if(count(Auth::user()->pendingFriendRequestIds())>0){
+            foreach (Auth::user()->pendingFriendRequestIds() as $us) {
+                $pendingFriendRequestIds[] = $us;
+            }
+        }else{
+            $pendingFriendRequestIds=[];
+        }
+
+        if(count(Auth::user()->pendingFriendRequestSentIds())>0) {
+            foreach (Auth::user()->pendingFriendRequestSentIds() as $us){
+                $pendingFriendRequestSentIds[] = $us;
+        }
+        }else{
+            $pendingFriendRequestSentIds=[];
+        }
+        if(!empty($users)){
+        foreach ($users as $user){
+            if(!empty($friendsIds) && in_array($user->id,$friendsIds)) {
+                $user['status_type'] = 3;
+            }elseif(!empty($pendingFriendRequestIds) && in_array($user->id,$pendingFriendRequestIds)) {
+                $user['status_type'] = 4;
+            }elseif(!empty($pendingFriendRequestSentIds) && in_array($user->id,$pendingFriendRequestSentIds)) {
+                $user['status_type'] = 2;
+            }else{
+                $user['status_type'] =1;
+            }
+            
+           $date = Carbon::parse($user->online);
+           $now = Carbon::now();
+            $diff = $date->diffInMinutes($now);
+            if($diff<=10){
+                $user['last_online']=true;
+            }else{
+                $user['last_online']=false;
+            }
+            
+        }
+        }
+        //return $filter_option;
+        
+        if(!empty($filter_option)){
+            $users=$users->appends(Input::except('page'));
+         return view('admin.users.index', compact('users','arrTabs', 'active','path','title','filter_option'));
+        }else{
+            return view('admin.users.index', compact('users','arrTabs', 'active','path','title'));
+        }
+    }
+    
+    
 }

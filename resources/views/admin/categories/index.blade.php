@@ -40,7 +40,7 @@
                       @foreach($categories as $category)
                           <tr>
                               <td>{{$category->id}}</td>
-                              <td><a href="{{ URL::to('admin/categories/' . $category->id . '/edit') }}">{{$category->name}}</a></td>
+                              <td><a href="{{ URL::to('/categories/' . $category->id . '/edit') }}">{{$category->name}}</a></td>
                               <td>{{$category->created_at ? $category->created_at->diffForHumans():"No date"}}</td>
                               <td>{{$category->updated_at ? $category->updated_at->diffForHumans():"No date"}}</td>
                           </tr>

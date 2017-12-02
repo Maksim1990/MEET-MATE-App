@@ -29,6 +29,14 @@
                 <div class="col-xs-6 col-sm-6 ">{{$community->type->name}}</div>
                 <div class="col-xs-6 col-sm-6 ">Category:</div>
                 <div class="col-xs-6 col-sm-6 ">{{$community->category->name}}</div>
+                <div class="col-xs-12 col-sm-12 " style='padding-top:15px;text-align:left;'>
+                    
+                    @if($community->user->id!= Auth::id() && !in_array(Auth::id(),$arrUsersInCommunityIds))
+                    <button class='btn btn-small btn-warning'  >Join community</button>
+                    @elseif($community->user->id!= Auth::id())
+                    <button class='btn btn-small btn-danger'  >Leave community</button>
+                    @endif
+                </div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-6 w3-center">
@@ -190,8 +198,8 @@
                                         <img style="border-radius: 50px;" height="50" width="50" src="{{$friend->photo ? $path.$friend->photo->path :$path."/images/noimage.png"}}" alt="">
                                         {{$friend->name}}
                                     </a>
-                                    <a id="user_link_{{$friend->id}}" class="inviteUser btn btn-small btn-warning" data-user-invite-id="{{$friend->id}}" data-user-invite-name="{{$friend->name}}" style="height:20px;padding:0px 5px;">Invite</a>
-                                <span id="user_info_{{$friend->id}}"></span>
+                                    <a  class="inviteUser user_link_{{$friend->id}} btn btn-small btn-warning" data-user-invite-id="{{$friend->id}}" data-user-invite-name="{{$friend->name}}" style="height:20px;padding:0px 5px;">Invite</a>
+                                <span class="user_info_{{$friend->id}}"></span>
                                 </li>
                             @endforeach
                         </ul>
@@ -203,21 +211,21 @@
                     <input class="w3-input w3-border w3-padding" type="text" placeholder="Search for names.." id="friendSearch" onkeyup="myFunction('friendSearch','myUL_friends')">
                     <div class="right_friends">
                     <ul class="w3-ul w3-margin-top" id="myUL_friends">
-                        @foreach($user_online->friends() as $friend)
+                        @foreach($friends as $friend)
                             <li class="user_invite_{{$friend->id}}">
                                 <a href="{{ URL::to('users/' . $friend->id ) }}" style="font-size:15px">
                                     <img style="border-radius: 50px;" height="50" width="50" src="{{$friend->photo ? $path.$friend->photo->path :$path."/images/noimage.png"}}" alt="">
                                     {{$friend->name}}
                                 </a>
-                                <a id="user_link_{{$friend->id}}" class="inviteUser btn btn-small btn-warning" data-user-invite-id="{{$friend->id}}" data-user-invite-name="{{$friend->name}}" style="height:20px;padding:0px 5px;">Invite</a>
-                                <span id="user_info_{{$friend->id}}"></span>
+                                <a  class="inviteUser user_link_{{$friend->id}} btn btn-small btn-warning" data-user-invite-id="{{$friend->id}}" data-user-invite-name="{{$friend->name}}" style="height:20px;padding:0px 5px;">Invite</a>
+                                <span class="user_info_{{$friend->id}}"></span>
                             </li>
                         @endforeach
                     </ul>
                     </div>
                 </div>
                 <div id="users_pending" class="tab-pane fade">
-                    <h4>List of friends</h4>
+                    <h4>List of pending requests</h4>
                     <p>Search for a name in the input field.</p>
                     <input class="w3-input w3-border w3-padding" type="text" placeholder="Search for names.." id="friendSearch" onkeyup="myFunction('pendingSearch','myUL_pending')">
                     <div class="right_friends">
@@ -228,8 +236,10 @@
                                         <img style="border-radius: 50px;" height="50" width="50" src="{{$user->photo ? $path.$user->photo->path :$path."/images/noimage.png"}}" alt="">
                                         {{$user->name}}
                                     </a>
-                                    <a id="user_link_{{$user->id}}" class="inviteUser btn btn-small btn-warning" data-user-invite-id="{{$user->id}}" data-user-invite-name="{{$user->name}}" style="height:20px;padding:0px 5px;">Invite</a>
-                                    <span id="user_info_{{$user->id}}"></span>
+                                    @if($user->user_inviter==Auth::id() || ($community->user_id==Auth::id() && $user->user_inviter== $community->user_id))
+                                    <a id="user_decline_{{$user->id}}" class="declineUser btn btn-small btn-danger" data-user-invite-id="{{$user->id}}" data-user-invite-name="{{$user->name}}" style="height:20px;padding:0px 5px;">Decline</a>
+                                   @endif
+                                    <span class="user_declined_{{$user->id}}"></span>
                                 </li>
                             @endforeach
                         </ul>
@@ -638,8 +648,6 @@ var status=true;
     function deletePost(id) {
         var post_id=id;
         var community_id='{{$community->id}}';
-        alert(post_id);
-        alert(community_id);
         var url_delete_post='{{ URL::to('community_post_delete') }}';
         var conf=confirm("Do you want to delete this post?");
         if(conf){
@@ -760,14 +768,38 @@ var status=true;
             url:url_user_invite,
             data:{community_id:community_id,user_id:user_id,_token:token},
             success: function(data) {
-                $('#user_link_'+user_id).hide();
-                $('#user_info_'+user_id).text('Invited').addClass('w3-green','w3-text-white','w3-round-xxlarge','w3-padding-small');
+                $('.user_link_'+user_id).hide();
+                $('.user_info_'+user_id).text('Invited').addClass('w3-green','w3-text-white','w3-round-xxlarge','w3-padding-small');
                 if(data['status']){
                     new Noty({
                         type: 'success',
                         layout: 'bottomLeft',
                         text: user_name+' is successfully invited!'
 
+                    }).show();
+                }
+
+            }
+        });
+
+    });
+
+    $(".declineUser").click(function(e) {
+        var user_id=$(this).data('user-invite-id');
+        var community_id='{{$community->id}}';
+        var url_user_invite='{{ URL::to('community_user_decline') }}';
+        $.ajax({
+            method:'POST',
+            url:url_user_invite,
+            data:{community_id:community_id,user_id:user_id,_token:token},
+            success: function(data) {
+                $('#user_decline_'+user_id).hide();
+                $('.user_declined_'+user_id).text('Declined').addClass('w3-red','w3-text-white','w3-round-xxlarge','w3-padding-small');
+                if(data['status']){
+                    new Noty({
+                        type: 'success',
+                        layout: 'bottomLeft',
+                        text: 'Request successfully declined!'
                     }).show();
                 }
 

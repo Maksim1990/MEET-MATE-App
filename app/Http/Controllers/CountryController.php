@@ -11,7 +11,7 @@ class CountryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public $path="/laravelvue/";
+     //public $path="/laravelvue/";
     public $path="";
 
     public function index()

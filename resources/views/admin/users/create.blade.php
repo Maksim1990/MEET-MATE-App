@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section ('General')
 <div>
-        <p>Create User</p>
+        <p >Create User</p>
 
             {!! Form::open(['method'=>'POST','action'=>'AdminUserController@store', 'files'=>true])!!}
             <div class="group-form">

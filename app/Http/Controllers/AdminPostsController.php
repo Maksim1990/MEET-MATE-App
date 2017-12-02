@@ -449,8 +449,8 @@ class AdminPostsController extends Controller
             $post['dislike'] = 0;
         }
     }
-    
-    
+
+
     $users=[];
     foreach ($posts as $post){
         array_push($users, $post->user);
@@ -495,7 +495,7 @@ class AdminPostsController extends Controller
                 $post['dislike'] = 0;
             }
         }
-        
+
         $users=[];
         foreach ($postAll as $post){
             array_push($users, $post->user);
@@ -506,7 +506,7 @@ class AdminPostsController extends Controller
         if(!empty($postsOfUser)){
             $user=$postsOfUser->user;
         }
-        
+
 
         return view('blog/index', compact('arrTabs', 'active', 'posts','path','users','user','postsOfUser'));
     }

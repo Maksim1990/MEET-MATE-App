@@ -28,7 +28,7 @@
                     <div class="w3-col m12 l12 w3-center">
                         <hr>
                         <h1>{{strtoupper($post->title)}}</h1>
-                        <p>{!! $post->body !!}</p>
+                        <p style="line-height: 30px;">{!! $post->body !!}</p>
                     </div>
 
                     <div>

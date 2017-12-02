@@ -67,7 +67,6 @@
                 var input_word=$('#input_word').val();
                 var output_lang=$('#output_lang').val();
                 var input_lang=$('#input_lang').val();
-
                 $.ajax({
                     method:'POST',
                     url:url,

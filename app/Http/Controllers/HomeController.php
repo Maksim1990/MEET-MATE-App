@@ -53,10 +53,10 @@ class HomeController extends Controller
     {
         $user_id=$request['user_id'];
         $user=User::findOrFail($user_id);
-        $user->online=Carbon::now();
+        $user->online=date('Y-m-d H:i:s');
         $user->update();
         return ["status"=>true
         ];
     }
-    
+
 }
