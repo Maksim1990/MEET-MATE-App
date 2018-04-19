@@ -8,5 +8,17 @@ Application allows people to communicate via live chat, create new communities a
 ![Mockup for feature A](http://web.discoveringworld.net/wp-content/uploads/2017/12/meet3.png)
 
 
-Techniques that were used for creation of this application:
--  minus sign (hyphen)
+## Techniques that were used for creation of this application:##
+-  PHP 7.0
+-  MySQL
+-  VueJS
+-  HTML5
+-  CSS3/ W3 CSS
+-  Laravel 5.4 (using as well Scout, Algolia, Carbon, Events, Queue)
+-  JavaScript
+-  Ajax
+-  JQuery
+-  Noty (JS library)
+-  WebSockets
+-  Google Translate and other APIs
+-  Photoshop
