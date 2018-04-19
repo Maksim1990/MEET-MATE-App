@@ -2,7 +2,7 @@
 
 ## Check this project online: http://discoveringworld.net/laravelvue/
 
-![#f03c15](ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:)
+<span style="color:blue">ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:</span>
 
 > **LOGIN: bernard@gmail.com** <br />
 > **PASSWORD: bernardtest**
