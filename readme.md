@@ -6,10 +6,11 @@
 
 ###### Check out also my other applications and works: http://web.discoveringworld.net/
 
-![#f03c15](https://placehold.it/15/f03c15/000000?text=+)  *ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:*
+```![#f03c15](https://placehold.it/15/f03c15/000000?text=+)  *ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:*
 
 > **LOGIN: bernard@gmail.com** <br />
 > **PASSWORD: bernardtest**
+```
 
 **MEET MATE App** is targeting to unite people with mutual thoughts and ideas, to provide way to communicate with each other and share people’s interests.
 Easy scalable application is based on PHP, Laravel 5.4 and VueJS, AJAX, MySQL, JavaSript, Bootstrap/ W3 CSS and with using modern APIs of other applications (Google Translate, Google Map etc.)
