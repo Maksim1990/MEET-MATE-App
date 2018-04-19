@@ -2,7 +2,7 @@
 
 ## Check this project online: http://discoveringworld.net/laravelvue/
 
-![#f03c15](https://placehold.it/15/f03c15/000000?text=+)**ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:**
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+)  *ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:*
 
 > **LOGIN: bernard@gmail.com** <br />
 > **PASSWORD: bernardtest**
