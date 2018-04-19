@@ -8,7 +8,7 @@ Application allows people to communicate via live chat, create new communities a
 ![Mockup for feature A](http://web.discoveringworld.net/wp-content/uploads/2017/12/meet3.png)
 
 
-## Techniques that were used for creation of this application:##
+## Techniques that were used for creation of this application: ##
 -  PHP 7.0
 -  MySQL
 -  VueJS
