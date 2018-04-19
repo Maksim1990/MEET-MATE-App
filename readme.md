@@ -4,7 +4,7 @@
 
 ATTENTION! For testing purposes try to use following credentials. These are testing login & password details that provide access to test account and all main application functionalities:
 
-> **LOGIN: bernard@gmail.com** 
+> **LOGIN: bernard@gmail.com** <br />
 > **PASSWORD: bernardtest**
 
 **MEET MATE App** is targeting to unite people with mutual thoughts and ideas, to provide way to communicate with each other and share people’s interests.
