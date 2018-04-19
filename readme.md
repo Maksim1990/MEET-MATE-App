@@ -29,3 +29,11 @@ Application allows people to communicate via live chat, create new communities a
 -  WebSockets
 -  Google Translate and other APIs
 -  Photoshop
+
+![Mockup for feature A](http://web.discoveringworld.net/wp-content/uploads/2017/12/meet5.png)
+
+![Mockup for feature A](http://web.discoveringworld.net/wp-content/uploads/2017/12/meet4.png)
+
+![Mockup for feature A](http://web.discoveringworld.net/wp-content/uploads/2017/12/meet2.png)
+
+## Check this project online: http://discoveringworld.net/laravelvue/
